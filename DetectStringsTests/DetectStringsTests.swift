@@ -50,8 +50,8 @@ class DetectStringsTests: XCTestCase {
                 debug(index: index, result: result)
                 XCTAssertEqual(result.count, testCase.expected.count)
                 if result.count == testCase.expected.count {
-                    for index in 0..<result.count {
-                        XCTAssertEqual(result[index], testCase.expected[index])
+                    for itemIndex in 0..<result.count {
+                        XCTAssertEqual(result[itemIndex], testCase.expected[itemIndex])
                     }
                 }
             }
