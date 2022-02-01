@@ -10,27 +10,46 @@ import XCTest
 
 class DetectStringsTests: XCTestCase {
 
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    struct TestCase {
+        var text: String
+        var needles: [Needle]
+        var expected: [DetectionResult]
     }
 
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
+    let testCases: [TestCase] = [
+        TestCase(
+            text: "",
+            needles: [],
+            expected: []),
+        TestCase(
+            text: "ABCDEF",
+            needles: [Needle(text: "ABC", type: .link), Needle(text: "ABCDE", type: .hashtag)],
+            expected: [.hashtag("ABCDE"), .text("F")]),
+        TestCase(
+            text: "Test ABC ABC ABC",
+            needles: [Needle(text: "ABC", type: .link)],
+            expected: [.text("Test "), .link("ABC"), .text(" "), .link("ABC"), .text(" "), .link("ABC")]),
+    ]
 
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
+    func testAllCases() throws {
+        for (index, testCase) in self.testCases.enumerated() {
+            XCTContext.runActivity(named: "\(index):\(testCase.text)") { activity in
+                let result = testCase.text.findAll(needles: testCase.needles)
+                debug(index: index, result: result)
+                XCTAssertEqual(result.count, testCase.expected.count)
+                if result.count == testCase.expected.count {
+                    for index in 0..<result.count {
+                        XCTAssertEqual(result[index], testCase.expected[index])
+                    }
+                }
+            }
         }
     }
 
+    private func debug(index: Int, result: [DetectionResult]) {
+        print("INDEX[\(index)]:")
+        for item in result {
+            print(" - \(item)")
+        }
+    }
 }
