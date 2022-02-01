@@ -29,6 +29,18 @@ class DetectStringsTests: XCTestCase {
             text: "Test ABC ABC ABC",
             needles: [Needle(text: "ABC", type: .link)],
             expected: [.text("Test "), .link("ABC"), .text(" "), .link("ABC"), .text(" "), .link("ABC")]),
+        TestCase(
+            text: "Test ABC ABC ABC ",
+            needles: [Needle(text: "ABC", type: .link)],
+            expected: [.text("Test "), .link("ABC"), .text(" "), .link("ABC"), .text(" "), .link("ABC"), .text(" ")]),
+        TestCase(
+            text: "Test ABC ABC ABC abc",
+            needles: [Needle(text: "ABC", type: .link)],
+            expected: [.text("Test "), .link("ABC"), .text(" "), .link("ABC"), .text(" "), .link("ABC"), .text(" abc")]),
+        TestCase(
+            text: "ABC",
+            needles: [Needle(text: "ABC", type: .link)],
+            expected: [.link("ABC")]),
     ]
 
     func testAllCases() throws {
