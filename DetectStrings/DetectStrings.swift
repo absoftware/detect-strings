@@ -30,13 +30,13 @@ enum DetectionResult: Hashable {
             hasher.combine(0)
             hasher.combine(text)
         case .link(let text):
-            hasher.combine(0)
+            hasher.combine(1)
             hasher.combine(text)
         case .hashtag(let text):
-            hasher.combine(0)
+            hasher.combine(2)
             hasher.combine(text)
         case .text(let text):
-            hasher.combine(0)
+            hasher.combine(3)
             hasher.combine(text)
         }
     }
