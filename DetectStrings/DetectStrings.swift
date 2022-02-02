@@ -19,7 +19,7 @@ struct Needle {
     var type: NeedleType
 }
 
-enum DetectionResult: Hashable, Comparable {
+enum DetectionResult: Hashable {
     case user(_ text: String)
     case link(_ text: String)
     case hashtag(_ text: String)
