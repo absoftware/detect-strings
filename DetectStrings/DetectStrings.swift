@@ -7,10 +7,11 @@
 
 import Foundation
 
-enum NeedleType {
-    case user
-    case link
+/// Raw value means priority in case of the same content for a needle
+enum NeedleType: Int {
     case hashtag
+    case link
+    case user // the most important
 }
 
 struct Needle {
@@ -18,7 +19,7 @@ struct Needle {
     var type: NeedleType
 }
 
-enum DetectionResult: Hashable {
+enum DetectionResult: Hashable, Comparable {
     case user(_ text: String)
     case link(_ text: String)
     case hashtag(_ text: String)
@@ -44,15 +45,34 @@ enum DetectionResult: Hashable {
 
 extension String {
 
+    var trim: String {
+        let whiteSpaceCharacters = CharacterSet.whitespacesAndNewlines
+        return self.trimmingCharacters(in: whiteSpaceCharacters)
+    }
+
     /// Strategy for overlapping:
     /// - take first
-    /// - take longer if both starts in the same point
+    /// - take longer needle if both start at the same point
+    /// - ignore needles containing only white characters, trim white characters from others
     func findAll(needles: [Needle]) -> [DetectionResult] {
         var result = [DetectionResult]()
 
+        // Basic corner case with empty self
+        if self.trim.isEmpty {
+            result.append(.text(self))
+            return result
+        }
+
         // According to the strategy "take longer as first" sort from the longest to the shortest
-        let sortedNeedles = needles.sorted { needleA, needleB in
-            needleA.text.count > needleB.text.count
+        let sortedNeedles = needles.filter {
+            !$0.text.trim.isEmpty
+        }.map {
+            Needle(text: $0.text.trim, type: $0.type)
+        }.sorted { needleA, needleB in
+            if needleA.text.count != needleB.text.count {
+                return needleA.text.count > needleB.text.count
+            }
+            return needleA.type.rawValue > needleB.type.rawValue
         }
 
         var currentElementCharStartIndex: Int = 0
